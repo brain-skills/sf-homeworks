@@ -14,7 +14,6 @@ ElectricalAppliance.prototype.unplug = function () {
   console.log(`${this.name} выключен из розетки.`);
 };
 
-
 function Computer(brand, power, processor) {
   this.name = `${brand} Computer`;
   this.power = power;
