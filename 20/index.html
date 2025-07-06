@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Пример сайта - улучшенный код</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1 class="header__title">Мой сайт</h1>
+    <nav class="header__nav menu" aria-label="Главное меню">
+      <ul class="menu__list">
+        <li class="menu__item"><a class="menu__link" href="#">Главная</a></li>
+        <li class="menu__item"><a class="menu__link" href="#">О нас</a></li>
+        <li class="menu__item"><a class="menu__link" href="#">Контакты</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content">
+    <h2 class="content__title">Новости</h2>
+    <section id="news" class="news" aria-live="polite">
+      <article class="news__item">Новость 1</article>
+      <article class="news__item">Новость 2</article>
+      <article class="news__item">Новость 3</article>
+    </section>
+    <button id="loadMore" class="button" type="button" aria-label="Загрузить ещё новости">Загрузить ещё</button>
+  </main>
+
+  <footer class="footer">
+    <p class="footer__copy">© 2025 Мой сайт</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
