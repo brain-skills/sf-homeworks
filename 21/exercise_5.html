@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Список задач</title>
+  <style>
+    .completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <h2>Получить список задач пользователя</h2>
+  <input type="number" id="userIdInput" placeholder="Введите ID пользователя" min="1" />
+  <button id="fetchBtn">Получить список задач</button>
+
+  <div id="result"></div>
+
+  <script>
+    const input = document.getElementById('userIdInput');
+    const button = document.getElementById('fetchBtn');
+    const resultDiv = document.getElementById('result');
+
+    button.addEventListener('click', () => {
+      const userId = input.value.trim();
+      if (!userId) {
+        alert('Пожалуйста, введите ID пользователя');
+        return;
+      }
+
+      fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+        .then(res => {
+          if (res.status === 404) {
+            throw new Error('not found');
+          }
+          return res.json();
+        })
+        .then(user => {
+          // Пользователь найден, теперь запросим задачи
+          return fetch(`https://jsonplaceholder.typicode.com/users/${userId}/todos`);
+        })
+        .then(res => res.json())
+        .then(todos => {
+          if (todos.length === 0) {
+            resultDiv.innerHTML = '<p>У пользователя нет задач</p>';
+            return;
+          }
+
+          const ul = document.createElement('ul');
+          todos.forEach(task => {
+            const li = document.createElement('li');
+            li.textContent = task.title;
+            if (task.completed) {
+              li.classList.add('completed');
+            }
+            ul.appendChild(li);
+          });
+
+          resultDiv.innerHTML = '';
+          resultDiv.appendChild(ul);
+        })
+        .catch(error => {
+          if (error.message === 'not found') {
+            resultDiv.innerHTML = '<p>Пользователь с указанным id не найден</p>';
+          } else {
+            resultDiv.innerHTML = '<p>Произошла ошибка при загрузке данных</p>';
+            console.error(error);
+          }
+        });
+    });
+  </script>
+</body>
+</html>

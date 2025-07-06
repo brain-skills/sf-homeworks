@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Задание 6</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .images {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .images img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <label for="pageInput">Номер страницы</label>
+  <input type="text" id="pageInput" placeholder="Введите число от 1 до 10" />
+
+  <label for="limitInput">Лимит</label>
+  <input type="text" id="limitInput" placeholder="Введите число от 1 до 10" />
+
+  <button id="requestBtn">запрос</button>
+
+  <div id="errorMsg" class="error"></div>
+
+  <div id="imageContainer" class="images"></div>
+
+  <script>
+    const pageInput = document.getElementById('pageInput');
+    const limitInput = document.getElementById('limitInput');
+    const requestBtn = document.getElementById('requestBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    const imageContainer = document.getElementById('imageContainer');
+
+    // Функция для проверки, число ли, и попадает ли в диапазон 1-10
+    function isValidNumber(value) {
+      const num = Number(value);
+      return Number.isInteger(num) && num >= 1 && num <= 10;
+    }
+
+    // Функция для отображения изображений
+    function displayImages(data) {
+      imageContainer.innerHTML = ''; // очистить контейнер
+      data.forEach(item => {
+        const img = document.createElement('img');
+        img.src = item.download_url;
+        img.alt = item.author;
+        imageContainer.appendChild(img);
+      });
+    }
+
+    // Функция для сохранения данных в localStorage
+    function saveToLocal(data) {
+      localStorage.setItem('lastImages', JSON.stringify(data));
+    }
+
+    // Функция для загрузки данных из localStorage и отображения
+    function loadFromLocal() {
+      const saved = localStorage.getItem('lastImages');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          displayImages(data);
+        } catch (e) {
+          // Если что-то пошло не так, очистим localStorage
+          localStorage.removeItem('lastImages');
+        }
+      }
+    }
+
+    // Обработчик кнопки
+    requestBtn.addEventListener('click', () => {
+      errorMsg.textContent = '';
+      imageContainer.innerHTML = '';
+
+      const pageVal = pageInput.value.trim();
+      const limitVal = limitInput.value.trim();
+
+      const pageValid = isValidNumber(pageVal);
+      const limitValid = isValidNumber(limitVal);
+
+      if (!pageValid && !limitValid) {
+        errorMsg.textContent = 'Номер страницы и лимит вне диапазона от 1 до 10';
+        return;
+      }
+      if (!pageValid) {
+        errorMsg.textContent = 'Номер страницы вне диапазона от 1 до 10';
+        return;
+      }
+      if (!limitValid) {
+        errorMsg.textContent = 'Лимит вне диапазона от 1 до 10';
+        return;
+      }
+
+      const url = `https://picsum.photos/v2/list?page=${pageVal}&limit=${limitVal}`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          displayImages(data);
+          saveToLocal(data);
+        })
+        .catch(() => {
+          errorMsg.textContent = 'Ошибка при загрузке данных';
+        });
+    });
+
+    // При загрузке страницы отобразить последние картинки
+    window.onload = loadFromLocal;
+
+  </script>
+
+</body>
+</html>
